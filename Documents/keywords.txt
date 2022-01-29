@@ -1,0 +1,53 @@
+Keywords in the Grammar
+________________________
+
+- is
+- var
+- if
+- then
+- else
+- end
+- while
+- for
+- loop
+- end
+- return
+- print
+- or
+- and
+- xor
+- true
+- false
+- funct
+
+
+Types of values:
+
+- int
+- real
+- bool
+- string
+- empty
+- []
+- bool 
+
+Symbols:
+
+- ':='
+- '<'
+- '<='
+- '>'
+- '>='
+- '='
+- '|'
+- '/='
+- '+'
+- '-'
+- '*'
+- '/'
+- ')'
+- '('
+- '['
+- ']'
+- '{'
+- '}'

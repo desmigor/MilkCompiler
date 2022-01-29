@@ -1,0 +1,88 @@
+Dynamic Programming Language Grammar
+
+Program : { Declaration}
+
+________________________
+
+Declaration   : var VariableDefinition
+                            { ‘,’ VariableDefinition }
+     VariableDefinition : IDENT [ ':=' Expression ]
+
+________________________
+
+Statement : Declaration
+    Assignment : Reference ':=' Expression
+    If : if Expression then Body [ else Body ] end
+    Loop : while Expression loop Body end
+        | for [ IDENT in ] [ Expression '..' Expression ]
+        loop Body end
+    Return: return [ Expression ]
+    Print: print Expression { ',' Expression }    
+
+________________________
+
+Expressions
+
+Expression: Relation { ( or | and | xor ) Relation }
+Relation: Factor [ ( '<'|'<='|'>'|'>='|'='|'/=' ) Factor ]
+Factor: Term { [ '+' | '-' ] Term }
+Term: Unary{( '*'|'/')Unary}
+Unary: Reference
+    | Reference is TypeIndicator
+    | [ '+' | '-' | not ] Primary
+Primary: Literal
+        | readInt | readReal | readString
+        | FunctionLiteral
+        | '(' Expression ')'
+TypeIndicator : int | real | bool | string
+              | empty     // no type
+              | '[' ']'   // vector type
+              | '{' '}'   // tuple type
+              | func      // functional type
+
+________________________
+
+Refence Rule
+
+Reference : IDENT
+               | Reference '[' Expression ']'
+               | Reference '(' Expression { ',' Expression } ')'
+               | Reference '.' IDENT
+
+________________________
+
+Types and Literals
+
+|IntegerLiteral // 1, 12345, 777 
+| RealLiteral // 1.23
+| BooleanLiteral // true or false
+| StringLiteral // "string", 'string‘
+| ArrayLiteral
+| TupleLiteral
+
+- Arrays
+
+Array numbering begins from "1"
+var t := [];   // empty array declaration
+     t[10] := 25;
+     t[100] := func(x)=>x+1;
+     t[1000] := {a:=1,b:=2.7};
+
+- Tuple
+
+Tuple : '{' TupleElement { ',' TupleElement } '}'
+     TupleElement : [ Identifier ‘:=’ ] Expression
+
+Tuples can't be modified.
+var t := {a:=1, b:=2, c};
+t:=t+{d:=3}; //nowtis{a=1,b=2,c,d=3}
+    
+
+- Functions
+
+FunctionLiteral
+             : func [ '(' IDENT { ',' IDENT } ')' ] FunBody
+     FunBody : is Body end
+             | => Expression
+
+
