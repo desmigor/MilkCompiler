@@ -10,7 +10,6 @@ ________________________
 - while
 - for
 - loop
-- end
 - return
 - print
 - or
@@ -29,7 +28,6 @@ Types of values:
 - string
 - empty
 - []
-- bool 
 
 Symbols:
 
@@ -51,3 +49,6 @@ Symbols:
 - ']'
 - '{'
 - '}'
+- '//'
+
+
