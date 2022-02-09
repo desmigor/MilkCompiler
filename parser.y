@@ -207,8 +207,7 @@ Primary : IDENTIFIER Tail                             { $$ = new NIdentifier($1)
         | READREAL                                    { $$ = new NReadInput(); }
         | READSTRING                                  { $$ = new NReadInput(); }
         ;
-Tail : /* empty */
-     | DOT INT_LITERAL                   
+Tail : DOT INT_LITERAL                   
      | DOT IDENTIFIER              
      | LBRACK Expression RBRACK   
      | LPAREN Expressions RPAREN    
