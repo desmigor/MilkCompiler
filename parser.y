@@ -39,9 +39,52 @@ import lexems.*;
     }
 }
 
+%union {
+  
+  NProgram program;
+  NInstruction instruction;
+  NBlock block;
+  NDeclaration declaration;
+  NArray array;
+  NTuple tuple;
+  NStatement statement;
+  NAssignment assignment;
+  NPrint print;
+  NFunctionDefinition funcdef;
+  NParameters param;
+  NIf ifstmt;
+  NIfElse ifelse;
+  NLoop loop;
+  NReturn returnstmt;
+
+  NExpression expression;
+  NIdentifier identifier;
+  NIntegerLiteral integer_lit;
+  NReal real;
+  NBool boolstmt;
+  NStringLiteral string_lit;
+  NBinaryOperator binaryop;
+  NTypeCheck typecheck;
+  NUnary unary;
+  NReadInput readinput;
+  vector<NDeclaration> variableVector;
+  vector<NStatement> statementVector;
+  vector<NExpression> expressionVector;
+  vector<NIdentifier> paramVector;
+
+  string string;
+  int token;
+}
+
+// other
+%token <token> FUNCTOR EOF UNKNOWN
+
+// Identifier
+%token <string> IDENTIFIER
+
 // Literals
 %token <string> TRUE FALSE
-%token <string> TOKEN_INT_LITERAL TOKEN_REAL_LITERAL TOKEN_STRING_LITERAL
+%token <string> INT_LITERAL REAL_LITERAL STRING_LITERAL
 
 // Types
 %token <string> INT
@@ -83,19 +126,23 @@ import lexems.*;
 
 
 // Operators
-%token ASSIGN // ":="
-%token LT // "<"
-%token GT // ">"
-%token LTEQ // "<="
-%token GTEQ // ">="
-%token EQ // "="
-%token NOT_EQ // "/="
-%token PLUS // "+"
-%token MINUS // "-"
-%token MULT // "*"
-%token DIV // "/"
-%token INCR // "+="
+%token <token> ASSIGN // ":="
+%token <token> LT // "<"
+%token <token> GT // ">"
+%token <token> LTEQ // "<="
+%token <token> GTEQ // ">="
+%token <token> EQ // "="
+%token <token> NOT_EQ // "/="
+%token <token> PLUS // "+"
+%token <token> MINUS // "-"
+%token <token> MULT // "*"
+%token <token> DIV // "/"
+%token <token> INCR // "+="
 
+// Input
+%token <string> READINT READREAL READSTRING
+
+// %type
 %type <block> Body LoopBody Program
 %type <declaration> Declaration 
 %type <statement> Statement 
@@ -110,56 +157,122 @@ import lexems.*;
 
 
 %%
-Program:
-  %empty          { ast = new ElementsList(); lines = new ArrayList<Integer>(); }
-| Program (element) Declaration { ast.add($2); lines.add(@2.begin.line); }
-;
+Program : Body                                      { programBlock = $1; }
+        ;                                   
+Body :                                              { $$ = new NBlock(); }
+      | Declaration Body                            { $$ = $2; $$->push_back($1); }
+      | Statement Body                              { $$ = $2; $$->push_back($1); }
+      | Expression Body                             { $$ = $2; $$->push_back($1); }
+      ;
+Declaration : VAR IDENTIFIER SEMI                                       { $$ = new NDeclaration($2); }                                //{printf("He");} 
+            | VAR IDENTIFIER ASSIGNMENT Expression SEMI           { $$ = new NDeclaration($2, $4); }
+            ;
+Expression : Relation                                     { $$ = $1; }
+           | Relation AND Relation                  { $$ = new NBinaryOperator($1, $2, $3); }
+           | Relation OR Relation                   { $$ = new NBinaryOperator($1, $2, $3); }
+           | Relation XOR Relation                  { $$ = new NBinaryOperator($1, $2, $3); }
+           ;
+Expressions : Expression                                      { $$ = new NPrint(); $$->push_back($1); }
+            | Expression COMMA Expressions              { $$ = $3; $$->push_back($1); }
+            ;
+Relation : Factor                                         { $$ = $1; }
+         | Factor LESS Factor                       { $$ = new NBinaryOperator($1, $2, $3); }
+         | Factor LEQ Factor                        { $$ = new NBinaryOperator($1, $2, $3); }
+         | Factor GREAT Factor                      { $$ = new NBinaryOperator($1, $2, $3); }
+         | Factor GEQ Factor                        { $$ = new NBinaryOperator($1, $2, $3); }
+         | Factor EQUAL Factor                      { $$ = new NBinaryOperator($1, $2, $3); }
+         | Factor NEQ Factor                        { $$ = new NBinaryOperator($1, $2, $3); }
+         ;
+Factor : Term                                             { $$ = $1; }
+       | Term PLUS Factor                           { $$ = new NBinaryOperator($1, $2, $3); }
+       | Term MINUS Factor                          { $$ = new NBinaryOperator($1, $2, $3); }
+       ;
+Term : Unary                                              { $$ = $1; }
+     | Unary MULT Term                              { $$ = new NBinaryOperator($1, $2, $3); }
+     | Unary DIV Term                               { $$ = new NBinaryOperator($1, $2, $3); }
+     ;
+Unary : Primary                                 { $$ = $1; }
+      | PLUS Primary                      { $$ = new NUnary($1, $2); }
+      | MINUS Primary                     { $$ = new NUnary($1, $2); }
+      | NOT Primary                       { $$ = new NUnary($1, $2); }
+      | Literal                                 { $$ = $1; }
+      | LPAREN Expression RPAREN    { $$ = $2; }
+      | PLUS Primary IS TypeIndicator           { $$ = new NTypeCheck($1, $2, $4); }
+      | MINUS Primary IS TypeIndicator          { $$ = new NTypeCheck($1, $2, $4); }
+      | NOT Primary IS TypeIndicator            { $$ = new NTypeCheck($1, $2, $4); }
+      | Primary IS TypeIndicator                      { $$ = new NTypeCheck($1, $3); }
+      ;
+Primary : IDENTIFIER Tail                             { $$ = new NIdentifier($1); }
+        | READINT                                     { $$ = new NReadInput(); }
+        | READREAL                                    { $$ = new NReadInput(); }
+        | READSTRING                                  { $$ = new NReadInput(); }
+        ;
+Tail : /* empty */
+     | DOT INT_LITERAL                   
+     | DOT IDENTIFIER              
+     | LBRACK Expression RBRACK   
+     | LPAREN Expressions RPAREN    
+     ;
+Statement : Assignment                                  { $$ = $1; }
+          | Print                                       { $$ = $1; }
+          | Return                                      { $$ = $1; }
+          | If                                          { $$ = $1; }
+          | Loop                                        { $$ = $1; }
+          ;
+Assignment : Primary ASSIGNMENT Expression SEMI   { $$ = new NAssignment($1, $3); }   
+           ;
+Print : PRINT Expressions SEMI                    { $$ = $2; }         
+      ;
 
-Declaration:
-  'var' VariableDefinition   { $$ = $1; }
-| literal     { $$ = $1; }
-| list        { $$ = $1; }
-|
-| "'" element { $$ = new Quote($2); }
-;
-
-VariableDefinition:
-  literal {$$ = $1;}
-| ',' VariableDefintion {$$ = $2;}
-;
-
-assignmnet:
-  literal ':=' exp
-literal:
-  INT { $$ = $1; }
-| REAL    { $$ = $1; }
-| BOOLEAN { $$ = $1; }
-| STRING  { $$ = $1; }
-| ARRAY { $$ = $1; }
-| TUPLE { $$ = $1; }
-;
-
-list:
-  "(" list_elements ")" { $$ = $2; }
-| "(" special_form ")"  { $$ = $2; }
-;
-
-list_elements:
-  %empty                { $$ = new ElementsList(); }
-| list_elements element { $$ = $1; $1.add($2); }
-;
-
-special_form:
-  QUOTE element                         { $$ = new Quote($2); }
-| FUNC identifier list_of_atoms element { $$ = new Func($2, $3, $4, @1.begin.line); }
-| LAMBDA list_of_atoms element          { $$ = new Lambda($2, $3, @1.begin.line); }
-| PROG list_of_atoms element            { $$ = new Prog($2, $3); }
-| COND element element                  { $$ = new Cond($2, $3); }
-| COND element element element          { $$ = new Cond($2, $3, $4); }
-| WHILE element element                 { $$ = new While($2, $3); }
-| RETURN element                        { $$ = new Return($2); }
-| BREAK                                 { $$ = new Break(); }
-;
+Return : RETURN Expression SEMI                   { $$ = new NReturn($2); }             
+       | RETURN SEMI                                 { $$ = new NReturn(); }  
+       ;
+If : IF Expression THEN Body END            { $$ = new NIf($2, $4); }
+   | IF Expression THEN Body ELSE Body END      { $$ = new NIfElse($2, $4, $6); }
+   ;
+Loop : WHILE Expression LoopBody                        { $$ = new NLoop($2, $3); }
+     | FOR IDENTIFIER IN TypeIndicator LoopBody             { $$ = NULL; }
+     ;
+LoopBody : LOOP Body END                          { $$ = $2; }
+         ;
+TypeIndicator : INT                                     { $$ = $1; }                   
+              | REAL                                    { $$ = $1; }
+              | BOOL                                    { $$ = $1; }
+              | STRING                                  { $$ = $1; }
+              | EMPTY                                   { $$ = $1; }
+              | ARRAY                                   { $$ = $1; }
+              | TUPLE                                   { $$ = $1; }
+              ;
+Literal : INT_LITERAL                                   { $$ = new NIntegerLiteral(atol($1->c_str())); }
+        | REAL_LITERAL                                  { $$ = new NReal(atof($1->c_str())); }
+        | TRUE                                          { $$ = new NBool($1); }
+        | FALSE                                         { $$ = new NBool($1); }
+        | STRING_LITERAL                                { $$ = new NStringLiteral($1); }
+        | ArrayLiteral                                        { $$ = $1; }
+        | TupleLiteral                                        { $$ = $1; }
+        | FunctionLiteral                                     { $$ = $1; }
+        ;
+ArrayLiteral : LBRACK RBRACK                    { $$ = new NArray(); }
+             | LBRACK Expressions RBRACK        { $$ = new NArray(); }
+             ;
+TupleLiteral : LCURLY RCURLY                      { $$ = new NTuple(); } 
+             | LCURLY IDENTIFIER TupleTail        { $$ = new NTuple(); }
+             | LCURLY IDENTIFIER ASSIGNMENT Expression TupleTail      { $$ = new NTuple(); }
+             ;
+TupleTail : RCURLY
+          | COMMA IDENTIFIER TupleTail
+          | COMMA IDENTIFIER ASSIGNMENT Expression TupleTail
+          ;
+FunctionLiteral : FUNC IS Body END                          { $$ = new NFunctionDefinition();  $$->setBody($3); }
+                | FUNC FUNCTOR Expression                         { $$ = new NFunctionDefinition();  $$->setExpression($3); }
+                | FUNC Parameters IS Body END               { $$ = new NFunctionDefinition(); $$->setParameters($2); $$->setBody($4); }
+                | FUNC Parameters FUNCTOR Expression              { $$ = new NFunctionDefinition(); $$->setParameters($2); $$->setExpression($4); }
+                ;
+Parameters : LPAREN Identifiers RPAREN                            { $$ = $2; }
+           ;
+Identifiers : IDENTIFIER                                                { $$ = new NParameters(); $$->push_parameter(new NIdentifier($1)); }
+            | IDENTIFIER COMMA Identifiers                        { $$ = $3; $$->push_parameter(new NIdentifier($1)); }
+            ;
 
 
 %%
