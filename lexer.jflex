@@ -14,7 +14,7 @@ import java.util.*;
   private parser yyparser;
 
   /* constructor taking an additional parser object */
-  public Yylex(java.io.Reader r, parser yyparser) {
+  public void Yylex(java.io.Reader r, parser yyparser) {
     this(r);
     this.yyparser = yyparser;
   }
