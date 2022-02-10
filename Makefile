@@ -16,17 +16,17 @@ run: Parser.class
 build: clean Parser.class
 
 clean:
-		rm -f *~ *.class *.java
+	rm -f *~ *.class *.java
 
 Parser.class: Yylex.java Parser.java
-	$(JAVAC) Parser.java
+ $(JAVAC) Parser.java
 
 Yylex.java: lexer.flex
-	$(JFLEX) flex.flex
+ $(JFLEX) flex.flex
 
 Parser.java: parser.y
-	$(BYACCJ) parser.y
+ $(BYACCJ) parser.y
 
-#jflex lexer.jflex
+#jflex lexer.jflex 
 #javac lexer.java
 #java milk milk_examples/basic.milk 
