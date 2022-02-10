@@ -1,0 +1,17 @@
+var inumber1 := 10;
+var inumber2 := 2;
+var rnumber1 := 2.4;
+var rnumber2 := 0.1;
+var result;
+
+result := inumber1 + rnumber2;
+print result;		//10.1
+
+result := inumber1 - inumber2;
+print result;		//8
+
+result := inumber1 * rnumber1;
+print result;		//24.0
+
+result := inumber1 / rnumber1;
+print result;		//4.16
