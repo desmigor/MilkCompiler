@@ -1,149 +1,83 @@
-%require "3.0"
-%language "Java"
-%define api.pure full
-%define parse.lac full
+%define api.prefix {Parser}
+%define api.parser.class {Parser}
+%define api.parser.public
 %define parse.error verbose
 
-%define api.package parser
-%define api.parser.class {Parser}
-%define api.value.type {Object}
-%define api.parser.public
-%define api.push-pull push
-%define parse.error custom
-%define parse.trace
-%locations
-
-%code imports {
-import java.io.IOException;
-import java.util.*;
-import lexems.*;
+%code imports{
+  import java.io.InputStream;
+  import java.io.InputStreamReader;
+  import java.io.Reader;
+  import java.io.IOException;
 }
+
 
 %code {
-    private static ElementsList ast;
-    public static List<Integer> lines;
-    public static ElementsList makeAST() throws IOException {
-        MyLexer l = new MyLexer(System.in);
-        Parser p = new parser.Parser(l);
-        int status;
-        do {
-            int token = l.getToken();
-            IElement lval = l.getValue();
-            Parser.Location yyloc = l.getLocation();
-            status = p.push_parse(token, lval, yyloc);
-        } while (status == Parser.YYPUSH_MORE);
-        if (status != Parser.YYACCEPT) {
-            return null;
-        }
-        return ast;
-    }
+  public static void main(String args[]) throws IOException {
+    ParserLexer lexer = new ParserLexer(System.in);
+    Parser p = new Parser(lexer);
+    if(parser.parse())
+      System.out.println("---------------------\n Parser Completed Successfully!");
+    return;
+  }
 }
 
+//All keywords
+%token KEYWORD 
+
+//Boolean
+%token BOOLEAN_LITERAL 
+
+// Separators
+%token LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK SEMICOLON COMMA DOT
+
+// Operators
+%token EQ ASSIGN GT LT LTEQ GTEQ PLUS MINUS MULT DIV EXPR TOKEN_OR TOKEN_AND TOKEN_XOR
+
+// Numeric
+%token INTEGER_LITERAL REAL_LITERAL
+
+//Other tokens
+%token COMMENT WHITESPACE STRING UNKNOWN_TOKEN EOF
+
+// TYpe declaration
 %union {
-  
-  NProgram program;
-  NInstruction instruction;
-  NBlock block;
-  NDeclaration declaration;
-  NArray array;
-  NTuple tuple;
-  NStatement statement;
-  NAssignment assignment;
-  NPrint print;
-  NFunctionDefinition funcdef;
-  NParameters param;
-  NIf ifstmt;
-  NIfElse ifelse;
-  NLoop loop;
-  NReturn returnstmt;
+  //Node *node;
+  NProgram *program;
+  NInstruction *instruction;
+  NBlock *block;
+  NDeclaration *declaration;
+  NArray *array;
+  NTuple *tuple;
+  NStatement *statement;
+  NAssignment *assignment;
+  NPrint *print;
+  NFunctionDefinition *funcdef;
+  NParameters *param;
+  NIf *ifstmt;
+  NIfElse *ifelse;
+  NLoop *loop;
+  NReturn *returnstmt;
 
-  NExpression expression;
-  NIdentifier identifier;
-  NIntegerLiteral integer_lit;
-  NReal real;
-  NBool boolstmt;
-  NStringLiteral string_lit;
-  NBinaryOperator binaryop;
-  NTypeCheck typecheck;
-  NUnary unary;
-  NReadInput readinput;
-  vector<NDeclaration> variableVector;
-  vector<NStatement> statementVector;
-  vector<NExpression> expressionVector;
-  vector<NIdentifier> paramVector;
+  NExpression *expression;
+  NIdentifier *identifier;
+  NIntegerLiteral *integer_lit;
+  NReal *real;
+  NBool *boolstmt;
+  NStringLiteral *string_lit;
+  NBinaryOperator *binaryop;
+  NTypeCheck *typecheck;
+  NUnary *unary;
+  NReadInput *readinput;
+  std::vector<NDeclaration*> *variableVector;
+  std::vector<NStatement*> *statementVector;
+  std::vector<NExpression*> *expressionVector;
+  std::vector<NIdentifier*> *paramVector;
 
-  string string;
+  std::string *string;
   int token;
 }
 
-// other
-%token <token> FUNCTOR EOF UNKNOWN
-
-// Identifier
-%token <string> IDENTIFIER
-
-// Literals
-%token <string> TRUE FALSE
-%token <string> INT_LITERAL REAL_LITERAL STRING_LITERAL
-
-// Types
-%token <string> INT
-%token <string> REAL
-%token <string> BOOLE
-%token <string> STRING
-%token <string> EMPTY
-%token <string> ARRAY
-%token <string> TUPLE
-
-// Delimeters
-%token <token> RPAREN // ")"
-%token <token> LPAREN // "("
-%token <token> LBRACK // "["
-%token <token> RBRACK // "]"
-%token <token> LBRACE // "{"
-%token <token> RBRACE // "}"
-%token <token> SEMICOLON // ";"
-%token <token> DOT // "."
-%token <token> COMMA // ","
-
-// Keywords
-%token <token> OR 
-%token <token> AND
-%token <token> XOR
-%token <token> NOT
-%token <token> IS
-%token <token> IN 
-%token <token> FOR
-%token <token> WHILE
-%token <token> PRINT
-%token <token> RETURN
-%token <token> IF 
-%token <token> THEN 
-%token <token> ELSE
-%token <token> END
-%token <token> LOOP
-%token <token> VAR
-
-
-// Operators
-%token <token> ASSIGN // ":="
-%token <token> LT // "<"
-%token <token> GT // ">"
-%token <token> LTEQ // "<="
-%token <token> GTEQ // ">="
-%token <token> EQ // "="
-%token <token> NOT_EQ // "/="
-%token <token> PLUS // "+"
-%token <token> MINUS // "-"
-%token <token> MULT // "*"
-%token <token> DIV // "/"
-%token <token> INCR // "+="
-
-// Input
-%token <string> READINT READREAL READSTRING
-
-// %type
-%type <block> Body LoopBody Program
+%type <block> Body LoopBody Prog
 %type <declaration> Declaration 
 %type <statement> Statement 
 %type <expression> Expression Relation Factor Term Unary Primary Literal 
@@ -153,174 +87,177 @@ import lexems.*;
 %type <print> Print Expressions 
 %type <param> Identifiers Parameters
 %type <string> TypeIndicator
-%start Program
+
+%%
+Prog : Body                              
+;
+
+Body : /* empty */                                        //{$$ = NULL; }
+     | Declaration Body                         
+     | Statement Body                           
+     | Expression Body                          
+;
+
+Declaration : KEYWORD STRING SEMICOLON                                 
+            | KEYWORD STRING ASSIGN Expression SEMICOLON     
+;
+
+Expression : Relation                           
+           | Relation TOKEN_AND Relation                  {$$ = $1 && $3; }
+           | Relation TOKEN_OR Relation                   {$$ = $1 || $3; }
+           | Relation TOKEN_XOR Relation                  {$$ = ($1 || $3)&&(!$1 || !$3); }
+;
+
+Relation : Factor                               
+         | Factor LT Factor                       {$$ = $1 < $3; }
+         | Factor LTEQ Factor                        {$$ = $1 <= $3; }
+         | Factor GT Factor                      {$$ = $1 > $3; }
+         | Factor GTEQ Factor                        {$$ = $1 >= $3; }
+         | Factor EQ Factor                      {$$ = $1 == $3; }
+;
+
+Factor : Term                                   
+       | Term PLUS Factor                           {$$ = $1 + $3; }
+       | Term MINUS Factor                          {$$ = $1 - $3; }
+;
+
+Term : Unary                                    
+     | Unary MULT Term                              {$$ = $1 * $3; }
+     | Unary DIV Term                               {$$ = $1 / $3; }
+;
+
+Unary : Primary                                 
+      | PLUS Primary                      
+      | MINUS Primary                                          
+      | Literal                                 
+      | LPAREN Expression RPAREN    
+      | PLUS Primary KEYWORD TypeIndicator           
+      | MINUS Primary KEYWORD TypeIndicator                     
+      | Primary KEYWORD TypeIndicator                      
+;
+
+Primary : TOKEN_IDENTIFIER Tails
+        | TOKEN_READINT                                     {scanf("%d", &$1); $$ = $1; }
+        | TOKEN_READREAL                                    //{scanf("%f", &$1); $$ = $1; }
+        | TOKEN_READSTRING                                  //{scanf("%s", $1); $$ = $1; }
+;
+
+Tails : /* empty */                                         //{$$ = NULL; }
+        | Tail Tails                           
+;
+
+Tail : TOKEN_DOT TOKEN_INT_LITERAL                   
+     | TOKEN_DOT TOKEN_IDENTIFIER               
+     | TOKEN_LSQUARE Expression TOKEN_RSQUARE   
+     | TOKEN_LPAREN Expressions TOKEN_RPAREN    
+;
+
+Statement : Assignment                         
+          | Print                              
+          | Return                             
+          | If                                 
+          | Loop                               
+;
+
+Assignment : Primary TOKEN_ASSIGNMENT Expression TOKEN_SEMI   //{$$ = $1 = $3; }   
+;
+
+Print : TOKEN_PRINT Expressions TOKEN_SEMI                
+;
+
+Expressions : Expression                        
+            | Expression TOKEN_COMMA Expressions      
+;
+
+Return : TOKEN_RETURN Expression TOKEN_SEMI                   //{$$ = return $2; }             
+       | TOKEN_RETURN TOKEN_SEMI                              //{$$ = NULL; }  
+;
+
+If : TOKEN_IF Expression TOKEN_THEN Body TOKEN_END            //{$$ = if_statement($2, $4, NULL); }
+   | TOKEN_IF Expression TOKEN_THEN Body TOKEN_ELSE Body TOKEN_END      //{$$ = if_statement($2, $4, $6); }
+;
+
+Loop : TOKEN_WHILE Expression LoopBody                        
+     | TOKEN_FOR TOKEN_IDENTIFIER TOKEN_IN TypeIndicator LoopBody             
+;
+
+LoopBody : TOKEN_LOOP Body TOKEN_END            
+;
+
+TypeIndicator : TOKEN_INT                                     //{$$ = "int";}                   
+              | TOKEN_REAL                                    //{$$ = "float";}
+              | TOKEN_BOOL                                    //{$$ = "bool";}
+              | TOKEN_STRING                                  //{$$ = "string";}
+              | TOKEN_EMPTY                                   //{$$ = "empty";}
+              | ArrayLiteral                    
+              | TupleLiteral                    
+              | TOKEN_FUNC                      
+;
+
+Literal : TOKEN_INT_LITERAL                     
+        | TOKEN_REAL_LITERAL                    
+        | TOKEN_TRUE                            
+        | TOKEN_FALSE                           
+        | TOKEN_STRING_LITERAL                  
+        | ArrayLiteral                          
+        | TupleLiteral
+        | FunctionLiteral                          
+;
+
+ArrayLiteral : TOKEN_LSQUARE TOKEN_RSQUARE      
+             | TOKEN_LSQUARE Expressions TOKEN_RSQUARE      
+;
+
+TupleLiteral : TOKEN_LCURLY TOKEN_RCURLY
+             | TOKEN_LCURLY TOKEN_IDENTIFIER TupleTail
+             | TOKEN_LCURLY TOKEN_IDENTIFIER TOKEN_ASSIGNMENT Expression TupleTail
+;
+
+TupleTail : TOKEN_RCURLY
+          | TOKEN_COMMA TOKEN_IDENTIFIER TupleTail
+          | TOKEN_COMMA TOKEN_IDENTIFIER TOKEN_ASSIGNMENT Expression TupleTail
+;
+
+FunctionLiteral : TOKEN_FUNC FunBody            
+                | TOKEN_FUNC Parameters FunBody 
+;
+
+Parameters : TOKEN_LPAREN Identifiers TOKEN_RPAREN        
+;
+
+Identifiers : TOKEN_IDENTIFIER                  
+            | TOKEN_IDENTIFIER TOKEN_COMMA Identifiers            
+FunBody : TOKEN_IS Body TOKEN_END               
+        | TOKEN_FUNCTOR Expression              
+        ;
 
 
 %%
-Program : Body                                      { programBlock = $1; }
-        ;                                   
-Body :                                              { $$ = new NBlock(); }
-      | Declaration Body                            { $$ = $2; $$->push_back($1); }
-      | Statement Body                              { $$ = $2; $$->push_back($1); }
-      | Expression Body                             { $$ = $2; $$->push_back($1); }
-      ;
-Declaration : VAR IDENTIFIER SEMI                                       { $$ = new NDeclaration($2); }                                //{printf("He");} 
-            | VAR IDENTIFIER ASSIGNMENT Expression SEMI           { $$ = new NDeclaration($2, $4); }
-            ;
-Expression : Relation                                     { $$ = $1; }
-           | Relation AND Relation                  { $$ = new NBinaryOperator($1, $2, $3); }
-           | Relation OR Relation                   { $$ = new NBinaryOperator($1, $2, $3); }
-           | Relation XOR Relation                  { $$ = new NBinaryOperator($1, $2, $3); }
-           ;
-Expressions : Expression                                      { $$ = new NPrint(); $$->push_back($1); }
-            | Expression COMMA Expressions              { $$ = $3; $$->push_back($1); }
-            ;
-Relation : Factor                                         { $$ = $1; }
-         | Factor LESS Factor                       { $$ = new NBinaryOperator($1, $2, $3); }
-         | Factor LEQ Factor                        { $$ = new NBinaryOperator($1, $2, $3); }
-         | Factor GREAT Factor                      { $$ = new NBinaryOperator($1, $2, $3); }
-         | Factor GEQ Factor                        { $$ = new NBinaryOperator($1, $2, $3); }
-         | Factor EQUAL Factor                      { $$ = new NBinaryOperator($1, $2, $3); }
-         | Factor NEQ Factor                        { $$ = new NBinaryOperator($1, $2, $3); }
-         ;
-Factor : Term                                             { $$ = $1; }
-       | Term PLUS Factor                           { $$ = new NBinaryOperator($1, $2, $3); }
-       | Term MINUS Factor                          { $$ = new NBinaryOperator($1, $2, $3); }
-       ;
-Term : Unary                                              { $$ = $1; }
-     | Unary MULT Term                              { $$ = new NBinaryOperator($1, $2, $3); }
-     | Unary DIV Term                               { $$ = new NBinaryOperator($1, $2, $3); }
-     ;
-Unary : Primary                                 { $$ = $1; }
-      | PLUS Primary                      { $$ = new NUnary($1, $2); }
-      | MINUS Primary                     { $$ = new NUnary($1, $2); }
-      | NOT Primary                       { $$ = new NUnary($1, $2); }
-      | Literal                                 { $$ = $1; }
-      | LPAREN Expression RPAREN    { $$ = $2; }
-      | PLUS Primary IS TypeIndicator           { $$ = new NTypeCheck($1, $2, $4); }
-      | MINUS Primary IS TypeIndicator          { $$ = new NTypeCheck($1, $2, $4); }
-      | NOT Primary IS TypeIndicator            { $$ = new NTypeCheck($1, $2, $4); }
-      | Primary IS TypeIndicator                      { $$ = new NTypeCheck($1, $3); }
-      ;
-Primary : IDENTIFIER Tail                             { $$ = new NIdentifier($1); }
-        | READINT                                     { $$ = new NReadInput(); }
-        | READREAL                                    { $$ = new NReadInput(); }
-        | READSTRING                                  { $$ = new NReadInput(); }
-        ;
-Tail : DOT INT_LITERAL                   
-     | DOT IDENTIFIER              
-     | LBRACK Expression RBRACK   
-     | LPAREN Expressions RPAREN    
-     ;
-Statement : Assignment                                  { $$ = $1; }
-          | Print                                       { $$ = $1; }
-          | Return                                      { $$ = $1; }
-          | If                                          { $$ = $1; }
-          | Loop                                        { $$ = $1; }
-          ;
-Assignment : Primary ASSIGNMENT Expression SEMI   { $$ = new NAssignment($1, $3); }   
-           ;
-Print : PRINT Expressions SEMI                    { $$ = $2; }         
-      ;
-
-Return : RETURN Expression SEMI                   { $$ = new NReturn($2); }             
-       | RETURN SEMI                                 { $$ = new NReturn(); }  
-       ;
-If : IF Expression THEN Body END            { $$ = new NIf($2, $4); }
-   | IF Expression THEN Body ELSE Body END      { $$ = new NIfElse($2, $4, $6); }
-   ;
-Loop : WHILE Expression LoopBody                        { $$ = new NLoop($2, $3); }
-     | FOR IDENTIFIER IN TypeIndicator LoopBody             { $$ = NULL; }
-     ;
-LoopBody : LOOP Body END                          { $$ = $2; }
-         ;
-TypeIndicator : INT                                     { $$ = $1; }                   
-              | REAL                                    { $$ = $1; }
-              | BOOL                                    { $$ = $1; }
-              | STRING                                  { $$ = $1; }
-              | EMPTY                                   { $$ = $1; }
-              | ARRAY                                   { $$ = $1; }
-              | TUPLE                                   { $$ = $1; }
-              ;
-Literal : INT_LITERAL                                   { $$ = new NIntegerLiteral(atol($1->c_str())); }
-        | REAL_LITERAL                                  { $$ = new NReal(atof($1->c_str())); }
-        | TRUE                                          { $$ = new NBool($1); }
-        | FALSE                                         { $$ = new NBool($1); }
-        | STRING_LITERAL                                { $$ = new NStringLiteral($1); }
-        | ArrayLiteral                                        { $$ = $1; }
-        | TupleLiteral                                        { $$ = $1; }
-        | FunctionLiteral                                     { $$ = $1; }
-        ;
-ArrayLiteral : LBRACK RBRACK                    { $$ = new NArray(); }
-             | LBRACK Expressions RBRACK        { $$ = new NArray(); }
-             ;
-TupleLiteral : LCURLY RCURLY                      { $$ = new NTuple(); } 
-             | LCURLY IDENTIFIER TupleTail        { $$ = new NTuple(); }
-             | LCURLY IDENTIFIER ASSIGNMENT Expression TupleTail      { $$ = new NTuple(); }
-             ;
-TupleTail : RCURLY
-          | COMMA IDENTIFIER TupleTail
-          | COMMA IDENTIFIER ASSIGNMENT Expression TupleTail
-          ;
-FunctionLiteral : FUNC IS Body END                          { $$ = new NFunctionDefinition();  $$->setBody($3); }
-                | FUNC FUNCTOR Expression                         { $$ = new NFunctionDefinition();  $$->setExpression($3); }
-                | FUNC Parameters IS Body END               { $$ = new NFunctionDefinition(); $$->setParameters($2); $$->setBody($4); }
-                | FUNC Parameters FUNCTOR Expression              { $$ = new NFunctionDefinition(); $$->setParameters($2); $$->setExpression($4); }
-                ;
-Parameters : LPAREN Identifiers RPAREN                            { $$ = $2; }
-           ;
-Identifiers : IDENTIFIER                                                { $$ = new NParameters(); $$->push_parameter(new NIdentifier($1)); }
-            | IDENTIFIER COMMA Identifiers                        { $$ = $3; $$->push_parameter(new NIdentifier($1)); }
-            ;
 
 
-%%
-private Yylex lexer;
-private int yylex () {
-    int yyl_return = -1;
-    try {
-        yylval = new ParserVal(0);
-        yyl_return = lexer.yylex();
-    }
-    catch (IOException e) {
-        System.err.println("IO error :"+e);
-    }
-    return yyl_return;
-}
+class ParserLexer implements Parser.Lexer {
+  InputStreamReader it;
+  Yylex yylex;
 
+  public ParserLexer(InputStream is){
+    it = new InputStreamReader(is);
+    yylex = new Yylex(it);
+  }
 
-public void yyerror (String error) {
-    System.err.println ("Error: " + error);
-}
+  @Override
+  public void yyerror (String s){
+	System.out.println("---------------------\nParser Completed with some errors");
+    System.err.println("\t-> Error: " + s);
+  }
 
+  @Override
+  public Object getLVal() {
+    return null;
+  }
 
-public Parser(Reader r) {
-    lexer = new Yylex(r, this);
-}
-
-
-static boolean interactive;
-
-public static void main(String args[]) throws IOException {
-    System.out.println("BYACC/Java with JFlex Calculator Demo");
-
-    Parser yyparser;
-    if ( args.length > 0 ) {
-        // parse a file
-        yyparser = new Parser(new FileReader(args[0]));
-    }
-    else {
-        // interactive mode
-        System.out.println("[Quit with CTRL-D]");
-        System.out.print("Expression: ");
-        interactive = true;
-        yyparser = new Parser(new InputStreamReader(System.in));
-    }
-
-    yyparser.yyparse();
-
-    if (interactive) {
-        System.out.println();
-        System.out.println("Have a nice day");
-    }
+  @Override
+  public int yylex () throws IOException{	
+	int token = yylex.yylex();
+    return token;
+  }
 }
