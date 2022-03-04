@@ -1,1 +1,116 @@
-import java.util.*; %% %class Parser.Lexer%standalone%unicode%type JavaType%line %column%byaccj/* main character classes */LineTerminator 	=	\r|\n|\r\nSemicolon 		= 	;Digit 			=	[0-9]Letter 			=	[a-zA-Z]LetterOrDigit	=	[a-zA-Z0-9]WhiteSpace = {LineTerminator} | [ \t\f]/* comments */Comment = {TraditionalComment}|{EndOfLineComment}TraditionalComment	 = "/\**\*/"EndOfLineComment	 = "//*{LineTerminator}?"/* identifiers */Identifier 			= {Letter}{LetterOrDigit}*/* integer literals */IntegerLiteral 		= 0 | [1-9][0-9]*    /* Real number literals */        RealLiteral 		= ({FLit1}|{FLit2}|{FLit3}){Exponent}?[fF]FLit1			    = [0-9]+\.[0-9]* FLit2			    = \.[0-9]+ FLit3			    = [0-9]+ Exponent			= [eE][+-]?[0-9]+UNKNOWN_TOKEN = .%state STRING%% <YYINITIAL> {  /* keywords */  "is"                           { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_IS; }  "var"                          { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_VAR; }  "if"                           { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_IF; }  "then"                         { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_THEN; }  "else"                         { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_ELSE; }  "end"                          { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_END; }  "while"                        { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_WHILE; }  "for"                          { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_FOR; }  "loop"                         { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_LOOP; }  "return"                       { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_RETURN; }  "print"                        { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_PRINT; }  "func"                        { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_FUNC; }    /* boolean literals */  "true"                         { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_TRUE; }  "false"                        { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.KW_FALSE; }      /* separators */  "("                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.LPAREN; }  ")"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.RPAREN; }  "{"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.LBRACE; }  "}"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.RBRACE; }  "["                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.LBRACK; }  "]"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.RBRACK; }  ";"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.SEMICOLON; }  ","                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.COMMA; }  "."                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.DOT; }    /* operators */  "="                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.EQ; }  ":="                           { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.ASSIGN; }  ">"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.GT; }  "<"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.LT; }  "<="                           { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.LTEQ; }  ">="                           { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.GTEQ; }  "+"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.PLUS; }  "-"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.MINUS; }  "*"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.MULT; }  "/"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.DIV; }  "=>"                           { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.LAMBDA; }  "or"                           { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.OR; }  "and"                          { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.AND; }  "xor"                          { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.XOR; }  /* numeric literals */    {IntegerLiteral}               { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.INTEGER_LITERAL; }  {RealLiteral}                  { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.REAL_LITERAL; }  {Identifier}				     { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.IDENTIFIER; }    /* comments */  {Comment}                      { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.COMMENT; }  /* whitespace */  {WhiteSpace}                   { return Lexeme.WHITESPACE; }    "\"([^\\\"\n\r]*\\[^\n\r])*\"" { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexeme.STRING; }}/* UNKNOWN TOKENS */{UNKNOWN_TOKEN} 				 {return Lexeme.UNKNOWN_TOKEN;}/* error fallback */[^]                              { throw new RuntimeException("Illegal character \""+yytext()+"\" at line "+yyline+", column "+yycolumn); }<<EOF>>                          { return Lexeme.EOF; }
+import java.util.*; 
+
+%% 
+%class LexerAnalysis
+%standalone
+%unicode
+%type int
+%line 
+%column
+%byaccj
+
+
+/* main character classes */
+LineTerminator 	=	\r|\n|\r\n
+Letter 			=	[a-zA-Z]
+LetterOrDigit	=	[a-zA-Z0-9]
+
+WhiteSpace = {LineTerminator} | [ \t\f]
+
+/* comments */
+Comment = {TraditionalComment}|{EndOfLineComment}
+
+TraditionalComment	 = "/\**\*/"
+EndOfLineComment	 = "//*{LineTerminator}?"
+
+/* identifiers */
+Identifier 			= {Letter}{LetterOrDigit}*
+
+/* integer literals */
+IntegerLiteral 		= 0 | [1-9][0-9]*
+    
+/* Real number literals */        
+RealLiteral 		= ({FLit1}|{FLit2}|{FLit3}){Exponent}?[fF]
+
+FLit1			    = [0-9]+\.[0-9]* 
+FLit2			    = \.[0-9]+ 
+FLit3			    = [0-9]+ 
+Exponent			= [eE][+-]?[0-9]+
+
+UNKNOWN_TOKEN = .
+
+%state STRING
+
+%% 
+<YYINITIAL> {
+
+  /* keywords */
+  "is"                           { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_IS; }
+  "var"                          { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_VAR; }
+  "if"                           { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_IF; }
+  "then"                         { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_THEN; }
+  "else"                         { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_ELSE; }
+  "end"                          { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_END; }
+  "while"                        { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_WHILE; }
+  "for"                          { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_FOR; }
+  "in"                          { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_IN; }
+  "loop"                         { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_LOOP; }
+  "return"                       { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_RETURN; }
+  "print"                        { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_PRINT; }
+  "func"                        { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_FUNC; }
+
+  
+  /* boolean literals */
+  "true"                         { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_TRUE; }
+  "false"                        { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.KW_FALSE; }
+  
+  
+  /* separators */
+  "("                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.LPAREN; }
+  ")"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.RPAREN; }
+  "{"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.LBRACE; }
+  "}"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.RBRACE; }
+  "["                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.LBRACK; }
+  "]"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.RBRACK; }
+  ";"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.SEMICOLON; }
+  ","                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.COMMA; }
+  "."                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.DOT; }
+  
+  /* operators */
+  "="                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.EQ; }
+  ":="                           { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.ASSIGN; }
+  ">"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.GT; }
+  "<"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.LT; }
+  "<="                           { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.LTEQ; }
+  ">="                           { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.GTEQ; }
+  "+"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.PLUS; }
+  "-"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.MINUS; }
+  "*"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.MULT; }
+  "/"                            { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.DIV; }
+  "or"                           { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.OR; }
+  "and"                          { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.AND; }
+  "xor"                          { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.XOR; }
+  "not"                          { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.NOT; }
+
+  /* numeric literals */
+  
+  {IntegerLiteral}               { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.INTEGER_LITERAL; }
+  {RealLiteral}                  { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.REAL_LITERAL; }
+  {Identifier}				     { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.IDENTIFIER; }
+  
+  /* comments */
+  {Comment}                      ;
+
+  /* whitespace */
+  {WhiteSpace}                   ;
+  
+  "\"([^\\\"\n\r]*\\[^\n\r])*\"" { System.out.println("[token at line " + yyline + ":" + yycolumn + " = \"" + yytext() + "\"]"); return Lexer.STRING; }
+}
+
+/* UNKNOWN TOKENS */
+{UNKNOWN_TOKEN} 				 {return Lexer.UNKNOWN_TOKEN;}
+
+/* error fallback */
+[^]                              { throw new RuntimeException("Illegal character \""+yytext()+"\" at line "+yyline+", column "+yycolumn); }
+<<EOF>>                          { return Lexer.EOF; }
+
