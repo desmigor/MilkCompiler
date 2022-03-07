@@ -69,8 +69,7 @@
 
 //Grammar Definition ___________
 %%  
-Prog : TOKEN_EOF {System.out.println("EOF");} 
-   | Body
+Prog : Body
 ;
 
 Body : 
@@ -89,7 +88,7 @@ Declaration : KW_VAR IDENTIFIER
 
 ReturnStatement : KW_RETURN Expression ;
 
-PrintStatement : KW_PRINT Args
+PrintStatement : KW_PRINT Expression;
 
 Assignment : IDENTIFIER ASSIGN Expression ;
 

@@ -1031,7 +1031,7 @@ public class Yylex {
         zzAtEOF = true;
             zzDoEOF();
               {
-                System.out.println("End of File Reached"); return ParserLexer.TOKEN_EOF;
+                return ParserLexer.TOKEN_EOF;
               }
       }
       else {

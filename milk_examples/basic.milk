@@ -3,4 +3,4 @@ var secondNumber := 20;
 var result := 0;
 
 result := firstNumber + secondNumber;
-print result
+print result;
