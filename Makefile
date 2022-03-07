@@ -14,4 +14,4 @@ all:
 	javac *.java
 
 clean:
-	rm parser.java *.class lexer.java lexer.java\~
+	rm parser.java Yylex.java *.class
