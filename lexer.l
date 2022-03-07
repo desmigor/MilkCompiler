@@ -14,7 +14,7 @@ import java.util.*;
 LineTerminator = \r|\n|;|\r\n
 InputCharacter = [^\r\n]
 
-WhiteSpace = {LineTerminator} | [ \t\f]
+WhiteSpace = {LineTerminator} | [ \t\n\r]+
 
 /* comments */
 Comment = {TraditionalComment} | {EndOfLineComment}
@@ -60,6 +60,7 @@ UNKNOWN_TOKEN = .
   "return"                       { System.out.println("[token at line " + yyline + " = \"" + yytext() + "\" : KW_RETURN]"); return ParserLexer.KW_RETURN; }
   "print"                        { System.out.println("[token at line " + yyline + " = \"" + yytext() + "\" : KW_PRINT]"); return ParserLexer.KW_PRINT; }
   "funct"                        { System.out.println("[token at line " + yyline + " = \"" + yytext() + "\" : KW_FUNCT]"); return ParserLexer.KW_FUNCT; }
+  
 
   
   /* boolean literals */
@@ -93,6 +94,7 @@ UNKNOWN_TOKEN = .
   "or"                           { System.out.println("[token at line " + yyline + " = \"" + yytext() + "\" : TOKEN_OR]"); return ParserLexer.TOKEN_OR; }
   "and"                          { System.out.println("[token at line " + yyline + " = \"" + yytext() + "\" : TOKEN_AND]"); return ParserLexer.TOKEN_AND; }
   "xor"                          { System.out.println("[token at line " + yyline + " = \"" + yytext() + "\" : TOKEN_XOR]"); return ParserLexer.TOKEN_XOR; }
+  "not"                          { System.out.println("[token at line " + yyline + " = \"" + yytext() + "\" : NOT]"); return ParserLexer.TOKEN_NOT; }
 
   /* numeric literals */
   
@@ -103,7 +105,7 @@ UNKNOWN_TOKEN = .
   {Comment}                      { System.out.println("[token at line " + yyline + " = \"" + yytext() + "\" : COMMENT]"); return ParserLexer.COMMENT; }
 
   /* whitespace */
-  {WhiteSpace}                   { return ParserLexer.WHITESPACE; }
+  {WhiteSpace}                   { }
   {Identifier}                   { System.out.println("[token at line " + yyline + " = \"" + yytext() + "\" : IDENTIFIER]"); return ParserLexer.IDENTIFIER; }
 }
 

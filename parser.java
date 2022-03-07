@@ -46,8 +46,9 @@ import java.util.ArrayList;
   import java.io.InputStreamReader;
   import java.io.Reader;
   import java.io.IOException;
+  import java.io.EOFException;
 
-/* "parser.java":51  */
+/* "parser.java":52  */
 
 /**
  * A Bison parser, automatically generated from <tt>parser.y</tt>.
@@ -129,15 +130,37 @@ public class parser
     S_TOKEN_OR(40),                /* TOKEN_OR  */
     S_TOKEN_AND(41),               /* TOKEN_AND  */
     S_TOKEN_XOR(42),               /* TOKEN_XOR  */
-    S_INTEGER_LITERAL(43),         /* INTEGER_LITERAL  */
-    S_REAL_LITERAL(44),            /* REAL_LITERAL  */
-    S_COMMENT(45),                 /* COMMENT  */
-    S_WHITESPACE(46),              /* WHITESPACE  */
+    S_TOKEN_NOT(43),               /* TOKEN_NOT  */
+    S_INTEGER_LITERAL(44),         /* INTEGER_LITERAL  */
+    S_REAL_LITERAL(45),            /* REAL_LITERAL  */
+    S_COMMENT(46),                 /* COMMENT  */
     S_STRING(47),                  /* STRING  */
     S_UNKNOWN_TOKEN(48),           /* UNKNOWN_TOKEN  */
     S_TOKEN_EOF(49),               /* TOKEN_EOF  */
     S_YYACCEPT(50),                /* $accept  */
-    S_prog(51);                    /* prog  */
+    S_Prog(51),                    /* Prog  */
+    S_Body(52),                    /* Body  */
+    S_Declaration(53),             /* Declaration  */
+    S_ReturnStatement(54),         /* ReturnStatement  */
+    S_PrintStatement(55),          /* PrintStatement  */
+    S_Assignment(56),              /* Assignment  */
+    S_Expression(57),              /* Expression  */
+    S_ArrayAccess(58),             /* ArrayAccess  */
+    S_Relation(59),                /* Relation  */
+    S_Calc(60),                    /* Calc  */
+    S_Value(61),                   /* Value  */
+    S_ArrayValue(62),              /* ArrayValue  */
+    S_DictValue(63),               /* DictValue  */
+    S_DictValues(64),              /* DictValues  */
+    S_ArrayValues(65),             /* ArrayValues  */
+    S_FunctionDef(66),             /* FunctionDef  */
+    S_FunctionCall(67),            /* FunctionCall  */
+    S_Params(68),                  /* Params  */
+    S_Args(69),                    /* Args  */
+    S_Statement(70),               /* Statement  */
+    S_IfStatement(71),             /* IfStatement  */
+    S_ForStatement(72),            /* ForStatement  */
+    S_WhileStatement(73);          /* WhileStatement  */
 
 
     private final int yycode_;
@@ -190,15 +213,37 @@ public class parser
       SymbolKind.S_TOKEN_OR,
       SymbolKind.S_TOKEN_AND,
       SymbolKind.S_TOKEN_XOR,
+      SymbolKind.S_TOKEN_NOT,
       SymbolKind.S_INTEGER_LITERAL,
       SymbolKind.S_REAL_LITERAL,
       SymbolKind.S_COMMENT,
-      SymbolKind.S_WHITESPACE,
       SymbolKind.S_STRING,
       SymbolKind.S_UNKNOWN_TOKEN,
       SymbolKind.S_TOKEN_EOF,
       SymbolKind.S_YYACCEPT,
-      SymbolKind.S_prog
+      SymbolKind.S_Prog,
+      SymbolKind.S_Body,
+      SymbolKind.S_Declaration,
+      SymbolKind.S_ReturnStatement,
+      SymbolKind.S_PrintStatement,
+      SymbolKind.S_Assignment,
+      SymbolKind.S_Expression,
+      SymbolKind.S_ArrayAccess,
+      SymbolKind.S_Relation,
+      SymbolKind.S_Calc,
+      SymbolKind.S_Value,
+      SymbolKind.S_ArrayValue,
+      SymbolKind.S_DictValue,
+      SymbolKind.S_DictValues,
+      SymbolKind.S_ArrayValues,
+      SymbolKind.S_FunctionDef,
+      SymbolKind.S_FunctionCall,
+      SymbolKind.S_Params,
+      SymbolKind.S_Args,
+      SymbolKind.S_Statement,
+      SymbolKind.S_IfStatement,
+      SymbolKind.S_ForStatement,
+      SymbolKind.S_WhileStatement
     };
 
     static final SymbolKind get(int code) {
@@ -254,9 +299,13 @@ public class parser
   "KW_PRINT", "IDENTIFIER", "BOOLEAN_LITERAL", "LPAREN", "RPAREN",
   "LBRACE", "RBRACE", "LBRACK", "RBRACK", "SEMICOLON", "COMMA", "DOT",
   "EQ", "ASSIGN", "GT", "LT", "LTEQ", "GTEQ", "PLUS", "MINUS", "MULT",
-  "DIV", "EXPR", "TOKEN_OR", "TOKEN_AND", "TOKEN_XOR", "INTEGER_LITERAL",
-  "REAL_LITERAL", "COMMENT", "WHITESPACE", "STRING", "UNKNOWN_TOKEN",
-  "TOKEN_EOF", "$accept", "prog", null
+  "DIV", "EXPR", "TOKEN_OR", "TOKEN_AND", "TOKEN_XOR", "TOKEN_NOT",
+  "INTEGER_LITERAL", "REAL_LITERAL", "COMMENT", "STRING", "UNKNOWN_TOKEN",
+  "TOKEN_EOF", "$accept", "Prog", "Body", "Declaration", "ReturnStatement",
+  "PrintStatement", "Assignment", "Expression", "ArrayAccess", "Relation",
+  "Calc", "Value", "ArrayValue", "DictValue", "DictValues", "ArrayValues",
+  "FunctionDef", "FunctionCall", "Params", "Args", "Statement",
+  "IfStatement", "ForStatement", "WhileStatement", null
     };
   }
 
@@ -360,14 +409,14 @@ public class parser
     static final int TOKEN_AND = 296;
     /** Token TOKEN_XOR, to be returned by the scanner.  */
     static final int TOKEN_XOR = 297;
+    /** Token TOKEN_NOT, to be returned by the scanner.  */
+    static final int TOKEN_NOT = 298;
     /** Token INTEGER_LITERAL, to be returned by the scanner.  */
-    static final int INTEGER_LITERAL = 298;
+    static final int INTEGER_LITERAL = 299;
     /** Token REAL_LITERAL, to be returned by the scanner.  */
-    static final int REAL_LITERAL = 299;
+    static final int REAL_LITERAL = 300;
     /** Token COMMENT, to be returned by the scanner.  */
-    static final int COMMENT = 300;
-    /** Token WHITESPACE, to be returned by the scanner.  */
-    static final int WHITESPACE = 301;
+    static final int COMMENT = 301;
     /** Token STRING, to be returned by the scanner.  */
     static final int STRING = 302;
     /** Token UNKNOWN_TOKEN, to be returned by the scanner.  */
@@ -571,8 +620,15 @@ public class parser
 
     switch (yyn)
       {
-        
-/* "parser.java":576  */
+          case 2: /* Prog: TOKEN_EOF  */
+  if (yyn == 2)
+    /* "parser.y":72  */
+                 {System.out.println("EOF");};
+  break;
+
+
+
+/* "parser.java":632  */
 
         default: break;
       }
@@ -984,17 +1040,30 @@ public class parser
     return yyvalue == yytable_ninf_;
   }
 
-  private static final byte yypact_ninf_ = -1;
-  private static final byte yytable_ninf_ = -1;
+  private static final short yypact_ninf_ = -41;
+  private static final short yytable_ninf_ = -1;
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-  private static final byte[] yypact_ = yypact_init();
-  private static final byte[] yypact_init()
+  private static final short[] yypact_ = yypact_init();
+  private static final short[] yypact_init()
   {
-    return new byte[]
+    return new short[]
     {
-      -1,     0,    -1
+      86,    -9,    -6,   -41,   -41,    -5,    -3,   132,   132,   -12,
+     132,    -2,   132,   132,   -41,   -41,   -41,   -41,    19,   -41,
+       7,   -41,    17,    18,   234,   -41,   -41,   -41,   -41,   -41,
+     -41,   -41,   104,   -41,   -41,   -41,   132,    -8,     2,   132,
+       1,   306,   253,   -41,   132,   132,   149,    16,    21,    41,
+     272,    40,    -1,   -41,   104,   104,   104,   132,   104,   132,
+     132,   132,   132,   132,   132,   132,   132,   132,   132,   132,
+     132,   -41,   171,    27,    54,   193,   132,    47,   306,   -41,
+      -2,   -41,   132,   -41,   -41,   -41,   -41,   291,   -41,    -1,
+     103,   103,   103,   103,   321,   321,   336,   336,   -14,    49,
+     -10,    68,    58,   306,   -41,   132,    67,   -41,   -41,   -41,
+     -41,   -41,   104,    62,   215,   104,     3,    56,    60,    72,
+      80,   -41,   104,    62,    83,   104,   -41,    82,   -41,   104,
+      84,   -41,    90,   -41,   -41
     };
   }
 
@@ -1006,7 +1075,20 @@ public class parser
   {
     return new byte[]
     {
-       2,     0,     1
+       4,     0,     0,    41,    42,     0,     0,     0,    55,    17,
+       0,    47,    49,     0,    39,    40,    38,     2,     0,     3,
+       0,    10,     0,     0,     0,    23,    19,    22,    20,    43,
+      44,    21,     4,    57,    58,    59,     0,    11,     0,     0,
+      17,    14,     0,    15,    55,     0,     0,     0,     0,     0,
+       0,     0,    33,     1,     4,     4,     4,     0,     4,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     9,     0,     0,     0,     0,    55,     0,    16,    18,
+      47,    46,    49,    45,     5,     8,     6,     0,     7,    29,
+      27,    25,    26,    28,    34,    35,    36,    37,    31,    30,
+      32,     0,     0,    12,    13,     0,     0,    56,    52,    48,
+      50,    24,     4,    53,     0,     4,     0,     0,     0,     0,
+       0,    60,     4,    53,     0,     4,    63,     0,    54,     4,
+       0,    61,     0,    62,    51
     };
   }
 
@@ -1016,7 +1098,9 @@ public class parser
   {
     return new byte[]
     {
-      -1,    -1
+     -41,   -41,   -30,   -41,   -41,   -41,    -4,    -7,   -41,   -41,
+     -41,   -41,   -41,   -41,    25,    31,   -41,   -41,   -22,   -40,
+     -41,   -41,   -41,   -41
     };
   }
 
@@ -1026,28 +1110,104 @@ public class parser
   {
     return new byte[]
     {
-       0,     1
+       0,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+      27,    28,    29,    30,    49,    51,   104,    31,   118,    43,
+      32,    33,    34,    35
     };
   }
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
    positive, shift that token.  If negative, reduce the rule whose
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
-  private static final byte[] yytable_ = yytable_init();
-  private static final byte[] yytable_init()
+  private static final short[] yytable_ = yytable_init();
+  private static final short[] yytable_init()
   {
-    return new byte[]
+    return new short[]
     {
-       2
+      41,    42,    71,    46,    77,    50,    52,    48,    44,   121,
+      57,    36,    37,   122,    57,    38,    47,    39,    45,    53,
+      74,    44,    73,    57,    84,    85,    86,    69,    88,    72,
+      68,    69,    75,    54,     3,     4,   107,    42,    78,    68,
+      69,    70,   102,    55,    56,    40,    45,    10,    80,    11,
+      87,    12,    89,    90,    91,    92,    93,    94,    95,    96,
+      97,    98,    99,   100,    81,    83,   103,   105,   108,    42,
+      13,    14,    15,    57,    16,    50,    48,   112,   113,   115,
+     117,   124,   116,   123,   125,   120,   126,   129,   131,     1,
+     133,     2,   127,     3,     4,   130,   134,     5,   114,   132,
+       6,   128,     7,     8,     9,   109,    10,     1,    11,     2,
+      12,     3,     4,   110,     0,     5,     0,     0,     6,     0,
+       7,     8,     9,     0,    10,     0,    11,    57,    12,    13,
+      14,    15,    59,    16,     0,    17,     0,     0,     0,     3,
+       4,     0,     0,    68,    69,    70,     0,    13,    14,    15,
+      40,    16,    10,     0,    11,     0,    12,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+      79,     0,     0,    57,     0,    13,    14,    15,    59,    16,
+      60,    61,    62,    63,    64,    65,    66,    67,     0,    68,
+      69,    70,   101,     0,     0,    57,     0,     0,     0,     0,
+      59,     0,    60,    61,    62,    63,    64,    65,    66,    67,
+       0,    68,    69,    70,   106,     0,     0,    57,     0,     0,
+       0,     0,    59,     0,    60,    61,    62,    63,    64,    65,
+      66,    67,     0,    68,    69,    70,   119,     0,     0,    57,
+       0,     0,     0,     0,    59,     0,    60,    61,    62,    63,
+      64,    65,    66,    67,     0,    68,    69,    70,    57,     0,
+      58,     0,     0,    59,     0,    60,    61,    62,    63,    64,
+      65,    66,    67,     0,    68,    69,    70,    57,     0,     0,
+      76,     0,    59,     0,    60,    61,    62,    63,    64,    65,
+      66,    67,     0,    68,    69,    70,    57,     0,     0,    82,
+       0,    59,     0,    60,    61,    62,    63,    64,    65,    66,
+      67,     0,    68,    69,    70,    57,   111,     0,     0,     0,
+      59,     0,    60,    61,    62,    63,    64,    65,    66,    67,
+      57,    68,    69,    70,     0,    59,     0,    60,    61,    62,
+      63,    64,    65,    66,    67,    57,    68,    69,    70,     0,
+      59,     0,    60,    61,    62,    63,     0,     0,    66,    67,
+      57,    68,    69,    70,     0,    59,     0,    60,    61,    62,
+      63,     0,     0,     0,     0,     0,    68,    69,    70
     };
   }
 
-private static final byte[] yycheck_ = yycheck_init();
-  private static final byte[] yycheck_init()
+private static final short[] yycheck_ = yycheck_init();
+  private static final short[] yycheck_init()
   {
-    return new byte[]
+    return new short[]
     {
-       0
+       7,     8,    32,    10,    44,    12,    13,    11,    20,     6,
+      24,    20,    18,    10,    24,    20,    18,    20,    30,     0,
+      18,    20,    30,    24,    54,    55,    56,    41,    58,    36,
+      40,    41,    39,    26,     7,     8,    76,    44,    45,    40,
+      41,    42,    15,    26,    26,    18,    30,    20,    27,    22,
+      57,    24,    59,    60,    61,    62,    63,    64,    65,    66,
+      67,    68,    69,    70,    23,    25,    73,    13,    21,    76,
+      43,    44,    45,    24,    47,    82,    80,     9,    20,    12,
+      18,    21,   112,    27,    12,   115,     6,     4,     6,     3,
+       6,     5,   122,     7,     8,   125,     6,    11,   105,   129,
+      14,   123,    16,    17,    18,    80,    20,     3,    22,     5,
+      24,     7,     8,    82,    -1,    11,    -1,    -1,    14,    -1,
+      16,    17,    18,    -1,    20,    -1,    22,    24,    24,    43,
+      44,    45,    29,    47,    -1,    49,    -1,    -1,    -1,     7,
+       8,    -1,    -1,    40,    41,    42,    -1,    43,    44,    45,
+      18,    47,    20,    -1,    22,    -1,    24,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      21,    -1,    -1,    24,    -1,    43,    44,    45,    29,    47,
+      31,    32,    33,    34,    35,    36,    37,    38,    -1,    40,
+      41,    42,    21,    -1,    -1,    24,    -1,    -1,    -1,    -1,
+      29,    -1,    31,    32,    33,    34,    35,    36,    37,    38,
+      -1,    40,    41,    42,    21,    -1,    -1,    24,    -1,    -1,
+      -1,    -1,    29,    -1,    31,    32,    33,    34,    35,    36,
+      37,    38,    -1,    40,    41,    42,    21,    -1,    -1,    24,
+      -1,    -1,    -1,    -1,    29,    -1,    31,    32,    33,    34,
+      35,    36,    37,    38,    -1,    40,    41,    42,    24,    -1,
+      26,    -1,    -1,    29,    -1,    31,    32,    33,    34,    35,
+      36,    37,    38,    -1,    40,    41,    42,    24,    -1,    -1,
+      27,    -1,    29,    -1,    31,    32,    33,    34,    35,    36,
+      37,    38,    -1,    40,    41,    42,    24,    -1,    -1,    27,
+      -1,    29,    -1,    31,    32,    33,    34,    35,    36,    37,
+      38,    -1,    40,    41,    42,    24,    25,    -1,    -1,    -1,
+      29,    -1,    31,    32,    33,    34,    35,    36,    37,    38,
+      24,    40,    41,    42,    -1,    29,    -1,    31,    32,    33,
+      34,    35,    36,    37,    38,    24,    40,    41,    42,    -1,
+      29,    -1,    31,    32,    33,    34,    -1,    -1,    37,    38,
+      24,    40,    41,    42,    -1,    29,    -1,    31,    32,    33,
+      34,    -1,    -1,    -1,    -1,    -1,    40,    41,    42
     };
   }
 
@@ -1058,7 +1218,20 @@ private static final byte[] yycheck_ = yycheck_init();
   {
     return new byte[]
     {
-       0,    51,     0
+       0,     3,     5,     7,     8,    11,    14,    16,    17,    18,
+      20,    22,    24,    43,    44,    45,    47,    49,    51,    52,
+      53,    54,    55,    56,    57,    58,    59,    60,    61,    62,
+      63,    67,    70,    71,    72,    73,    20,    18,    20,    20,
+      18,    57,    57,    69,    20,    30,    57,    18,    56,    64,
+      57,    65,    57,     0,    26,    26,    26,    24,    26,    29,
+      31,    32,    33,    34,    35,    36,    37,    38,    40,    41,
+      42,    52,    57,    30,    18,    57,    27,    69,    57,    21,
+      27,    23,    27,    25,    52,    52,    52,    57,    52,    57,
+      57,    57,    57,    57,    57,    57,    57,    57,    57,    57,
+      57,    21,    15,    57,    66,    13,    21,    69,    21,    64,
+      65,    25,     9,    20,    57,    12,    52,    18,    68,    21,
+      52,     6,    10,    27,    21,    12,     6,    52,    68,     4,
+      52,     6,    52,     6,     6
     };
   }
 
@@ -1068,7 +1241,13 @@ private static final byte[] yycheck_ = yycheck_init();
   {
     return new byte[]
     {
-       0,    50,    51
+       0,    50,    51,    51,    52,    52,    52,    52,    52,    52,
+      52,    53,    53,    53,    54,    55,    56,    57,    57,    57,
+      57,    57,    57,    57,    58,    59,    59,    59,    59,    59,
+      59,    59,    59,    59,    60,    60,    60,    60,    61,    61,
+      61,    61,    61,    61,    61,    62,    63,    64,    64,    65,
+      65,    66,    67,    68,    68,    69,    69,    70,    70,    70,
+      71,    71,    72,    73
     };
   }
 
@@ -1078,7 +1257,13 @@ private static final byte[] yycheck_ = yycheck_init();
   {
     return new byte[]
     {
-       0,     2,     0
+       0,     2,     1,     1,     0,     3,     3,     3,     3,     2,
+       1,     2,     4,     4,     2,     2,     3,     1,     3,     1,
+       1,     1,     1,     1,     4,     3,     3,     3,     3,     3,
+       3,     3,     3,     2,     3,     3,     3,     3,     1,     1,
+       1,     1,     1,     1,     1,     3,     3,     0,     3,     0,
+       3,     7,     4,     0,     3,     0,     3,     1,     1,     1,
+       7,     9,     9,     7
     };
   }
 
@@ -1138,13 +1323,13 @@ private static final byte[] yycheck_ = yycheck_init();
   }
 
 
-  private static final int YYLAST_ = 0;
+  private static final int YYLAST_ = 378;
   private static final int YYEMPTY_ = -2;
-  private static final int YYFINAL_ = 2;
+  private static final int YYFINAL_ = 53;
   private static final int YYNTOKENS_ = 50;
 
 /* Unqualified %code blocks.  */
-/* "parser.y":14  */
+/* "parser.y":15  */
 
   public static void main(String args[]) throws IOException {
     ParserLexer lexer = new ParserLexer(System.in);
@@ -1154,10 +1339,10 @@ private static final byte[] yycheck_ = yycheck_init();
     return;
   }
 
-/* "parser.java":1158  */
+/* "parser.java":1343  */
 
 }
-/* "parser.y":46  */
+/* "parser.y":170  */
 
 
 class ParserLexer implements parser.Lexer {

@@ -8,6 +8,7 @@
   import java.io.InputStreamReader;
   import java.io.Reader;
   import java.io.IOException;
+  import java.io.EOFException;
 }
 
 
@@ -21,6 +22,8 @@
   }
 }
 
+
+
 //All keywords
 %token KW_IF KW_IS KW_VAR KW_END KW_TRUE KW_FALSE KW_THEN 
 %token KW_ELSE KW_FOR KW_LOOP KW_IN KW_WHILE KW_FUNCT KW_RETURN KW_PRINT IDENTIFIER
@@ -32,16 +35,137 @@
 %token LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK SEMICOLON COMMA DOT
 
 // Operators
-%token EQ ASSIGN GT LT LTEQ GTEQ PLUS MINUS MULT DIV EXPR TOKEN_OR TOKEN_AND TOKEN_XOR
+%token EQ ASSIGN GT LT LTEQ GTEQ PLUS MINUS MULT DIV EXPR TOKEN_OR TOKEN_AND TOKEN_XOR TOKEN_NOT
 
 // Numeric
 %token INTEGER_LITERAL REAL_LITERAL
 
 //Other tokens
-%token COMMENT WHITESPACE STRING UNKNOWN_TOKEN TOKEN_EOF
+%token COMMENT STRING UNKNOWN_TOKEN TOKEN_EOF
 
+/* A union of all the types that can be the result of parsing actions. */
+
+/* Declare types for the grammar's non-terminals. */
+
+%left KW_RETURN KW_PRINT
+
+%left COMMA
+
+%left PLUS MINUS
+%left MULT DIV
+
+%left GT LT GTEQ LTEQ
+
+%left EQ
+
+%left TOKEN_NOT
+%left TOKEN_XOR
+%left TOKEN_OR
+%left TOKEN_AND
+%left ASSIGN
+
+%left LPAREN LBRACE LBRACK
+%start Prog
+
+//Grammar Definition ___________
 %%  
-prog : /*empty*/
+Prog : TOKEN_EOF {System.out.println("EOF");} 
+   | Body
+;
+
+Body : 
+     | Declaration SEMICOLON Body
+	 | Assignment SEMICOLON Body
+     | Expression SEMICOLON Body
+	 | PrintStatement SEMICOLON Body
+	 | Statement Body
+	 | ReturnStatement
+;
+
+Declaration : KW_VAR IDENTIFIER                                 
+         | KW_VAR IDENTIFIER ASSIGN Expression
+		 | KW_VAR IDENTIFIER ASSIGN FunctionDef
+;
+
+ReturnStatement : KW_RETURN Expression ;
+
+PrintStatement : KW_PRINT Args
+
+Assignment : IDENTIFIER ASSIGN Expression ;
+
+Expression : IDENTIFIER
+		 | LPAREN Expression RPAREN
+		 | Relation
+		 | Value
+		 | FunctionCall
+		 | Calc
+		 | ArrayAccess
+;
+
+ArrayAccess : Expression LBRACK Expression RBRACK ;
+
+Relation : Expression LT Expression                    
+         | Expression LTEQ Expression                  
+         | Expression GT Expression                    
+         | Expression GTEQ Expression                  
+         | Expression EQ Expression                    
+		 | Expression TOKEN_AND Expression
+		 | Expression TOKEN_OR Expression
+		 | Expression TOKEN_XOR Expression
+		 | TOKEN_NOT Expression
+;
+
+Calc :  Expression PLUS Expression 
+		 | Expression MINUS Expression
+		 | Expression MULT Expression 
+		 | Expression DIV Expression 
+;
+
+Value : STRING
+		 | INTEGER_LITERAL
+		 | REAL_LITERAL
+		 | KW_TRUE
+		 | KW_FALSE
+		 | ArrayValue
+		 | DictValue
+;
+
+ArrayValue : LBRACK ArrayValues RBRACK ;
+
+DictValue : LBRACE DictValues RBRACE ;
+
+DictValues : //empty
+		 | Assignment COMMA DictValues
+;		 
+
+ArrayValues : //empty
+		 | Expression COMMA ArrayValues
+;
+		 
+FunctionDef : KW_FUNCT LPAREN Params RPAREN KW_IS Body KW_END ;
+
+FunctionCall : IDENTIFIER LPAREN Args RPAREN ;
+
+Params: //empty
+	     | IDENTIFIER COMMA Params
+;
+
+Args: //empty
+		 | Expression COMMA Args
+;
+
+Statement : IfStatement
+		 | ForStatement
+		 | WhileStatement
+;
+
+IfStatement : KW_IF LPAREN Expression RPAREN KW_THEN Body KW_END
+		 | KW_IF LPAREN Expression RPAREN KW_THEN Body KW_ELSE Body KW_END
+;
+
+ForStatement : KW_FOR LPAREN IDENTIFIER KW_IN Expression RPAREN KW_LOOP Body KW_END ;
+
+WhileStatement : KW_WHILE LPAREN Expression RPAREN KW_LOOP Body KW_END ;
 
 %%
 

@@ -1,6 +1,6 @@
 var firstNumber := 10;
 var secondNumber := 20;
-var result := 0
+var result := 0;
 
 result := firstNumber + secondNumber;
-print result;       //30
+print result
