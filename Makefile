@@ -10,7 +10,7 @@ SHELL  = /bin/zsh
 all:
 	clear
 	jflex lexer.l
-	bison parser.y -L java
+	bison --report=all --debug parser.y -L java
 	javac *.java
 
 clean:

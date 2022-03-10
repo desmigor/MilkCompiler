@@ -1031,7 +1031,7 @@ public class Yylex {
         zzAtEOF = true;
             zzDoEOF();
               {
-                return ParserLexer.TOKEN_EOF;
+                return 0;
               }
       }
       else {

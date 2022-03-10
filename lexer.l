@@ -130,5 +130,5 @@ UNKNOWN_TOKEN = .
 
 /* error fallback */
 [^]                              { throw new RuntimeException("Illegal character \""+yytext()+"\" at line "+yyline+", column "+yycolumn); }
-<<EOF>>                          { return ParserLexer.TOKEN_EOF; }
+<<EOF>>                          { return 0; }
 

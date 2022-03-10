@@ -69,28 +69,31 @@
 
 //Grammar Definition ___________
 %%  
-Prog : Body
+Prog : 
+    %empty {System.out.println("EOF");} 
+    | Body Prog
+
 ;
 
 Body : 
-     | Declaration SEMICOLON Body
-	 | Assignment SEMICOLON Body
-     | Expression SEMICOLON Body
-	 | PrintStatement SEMICOLON Body
-	 | Statement Body
+    Declaration SEMICOLON 
+	 | Assignment SEMICOLON
+   | Expression SEMICOLON
+	 | PrintStatement SEMICOLON
+	 | Statement
 	 | ReturnStatement
 ;
 
 Declaration : KW_VAR IDENTIFIER                                 
-         | KW_VAR IDENTIFIER ASSIGN Expression
-		 | KW_VAR IDENTIFIER ASSIGN FunctionDef
+    | KW_VAR IDENTIFIER ASSIGN Expression
+		| KW_VAR IDENTIFIER ASSIGN FunctionDef
 ;
 
 ReturnStatement : KW_RETURN Expression ;
 
-PrintStatement : KW_PRINT Expression;
+PrintStatement : KW_PRINT Expression ;
 
-Assignment : IDENTIFIER ASSIGN Expression ;
+Assignment : IDENTIFIER ASSIGN Expression ; 
 
 Expression : IDENTIFIER
 		 | LPAREN Expression RPAREN
@@ -133,11 +136,11 @@ ArrayValue : LBRACK ArrayValues RBRACK ;
 
 DictValue : LBRACE DictValues RBRACE ;
 
-DictValues : //empty
+DictValues : %empty
 		 | Assignment COMMA DictValues
 ;		 
 
-ArrayValues : //empty
+ArrayValues : %empty
 		 | Expression COMMA ArrayValues
 ;
 		 
@@ -145,11 +148,11 @@ FunctionDef : KW_FUNCT LPAREN Params RPAREN KW_IS Body KW_END ;
 
 FunctionCall : IDENTIFIER LPAREN Args RPAREN ;
 
-Params: //empty
+Params: %empty
 	     | IDENTIFIER COMMA Params
 ;
 
-Args: //empty
+Args: %empty
 		 | Expression COMMA Args
 ;
 
