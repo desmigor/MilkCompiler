@@ -1,0 +1,16 @@
+var arr := ["cherry", "pie", "or", "cherry", "truffle"];
+
+for a in arr
+    loop
+        print a;
+    end
+    
+var range := [5000.07, 204, 555.90, 78];
+var t := {one:=1, two:=2, three:=3, four:=4};
+var total := 0;
+
+for n in t
+    loop
+        total := total + range[n];
+    end
+print total;

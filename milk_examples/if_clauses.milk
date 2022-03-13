@@ -1,0 +1,19 @@
+ar positiveNumber := true;
+var evenNumber := true;
+if (positiveNumber and evenNumber) then
+	print "number is even and positive";
+end
+
+if (positiveNumber or evenNumber) then
+	print "number is even or positive or both even and positive";
+end
+
+if (positiveNumber xor evenNumber) then
+	print "number is even or positive";
+end
+
+if (not positiveNumber) then
+	print "number is negative";
+else 
+	print "number is positive";
+endc

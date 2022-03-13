@@ -1,0 +1,5 @@
+var str := readString;
+
+for char in str loop
+	print char; 
+end;
