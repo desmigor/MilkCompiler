@@ -9,15 +9,21 @@
   import java.io.Reader;
   import java.io.IOException;
   import java.io.EOFException;
+  import syntax_tree.*;
 }
 
 
 %code {
+
+	Program root;
+
   public static void main(String args[]) throws IOException {
     ParserLexer lexer = new ParserLexer(System.in);
     parser p = new parser(lexer);
-    if(p.parse())
+    if(p.parse()) {
       System.out.println("---------------------\n Parser Completed Successfully!");
+	  System.out.println(p.root.toString());
+	}
     return;
   }
 }
@@ -25,11 +31,11 @@
 
 
 //All keywords
-%token KW_IF KW_IS KW_VAR KW_END KW_TRUE KW_FALSE KW_THEN 
+%token KW_IF KW_IS KW_VAR KW_END KW_TRUE KW_FALSE KW_THEN
 %token KW_ELSE KW_FOR KW_LOOP KW_IN KW_WHILE KW_FUNCT KW_RETURN KW_PRINT IDENTIFIER
 
 //Boolean
-%token BOOLEAN_LITERAL 
+%token BOOLEAN_LITERAL
 
 // Separators
 %token LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK SEMICOLON COMMA DOT
@@ -47,7 +53,9 @@
 
 /* Declare types for the grammar's non-terminals. */
 
-%left KW_RETURN KW_PRINT
+%left IDENTIFIER
+
+%left KW_RETURN KW_PRINT KW_IN
 
 %left COMMA
 
@@ -65,18 +73,22 @@
 %left ASSIGN
 
 %left LPAREN LBRACE LBRACK
-%start Prog
+%start Program
 
 //Grammar Definition ___________
-%%  
-Prog : 
-    %empty {System.out.println("EOF");} 
-    | Body Prog
+%%
+Program : Prog { root = new Program($1); } ;
+
+Prog :
+    %empty { $$ = new Program(); }
+    | Body Prog { $$ = new Program($2, $1); }
 
 ;
 
-Body : 
-    Declaration SEMICOLON 
+IDENTIFIER_T : IDENTIFIER { $$ = new Identifier($1); } ;
+
+Body :
+    Declaration SEMICOLON
 	 | Assignment SEMICOLON
    | Expression SEMICOLON
 	 | PrintStatement SEMICOLON
@@ -84,18 +96,18 @@ Body :
 	 | ReturnStatement
 ;
 
-Declaration : KW_VAR IDENTIFIER                                 
-    | KW_VAR IDENTIFIER ASSIGN Expression
-		| KW_VAR IDENTIFIER ASSIGN FunctionDef
+Declaration : KW_VAR IDENTIFIER_T   { $$ = new Declaration($2); }
+    | KW_VAR IDENTIFIER_T ASSIGN Expression { $$ = new Declaration($2, $4); }
+		| KW_VAR IDENTIFIER_T ASSIGN FunctionDef { $$ = new Declaration($2, $4, 0); }
 ;
 
-ReturnStatement : KW_RETURN Expression ;
+ReturnStatement : KW_RETURN Expression { $$ = new ReturnStatement($2); } ;
 
-PrintStatement : KW_PRINT Expression ;
+PrintStatement : KW_PRINT Expression { $$ = new PrintStatement($2); } ;
 
-Assignment : IDENTIFIER ASSIGN Expression ; 
+Assignment : IDENTIFIER_T ASSIGN Expression { $$ = new Assignment($1, $3); } ;
 
-Expression : IDENTIFIER
+Expression : IDENTIFIER_T
 		 | LPAREN Expression RPAREN
 		 | Relation
 		 | Value
@@ -104,58 +116,55 @@ Expression : IDENTIFIER
 		 | ArrayAccess
 ;
 
-ArrayAccess : Expression LBRACK Expression RBRACK ;
+ArrayAccess : Expression LBRACK Expression RBRACK { $$ = new ArrayAccess($1, $3); } ;
 
-Relation : Expression LT Expression                    
-         | Expression LTEQ Expression                  
-         | Expression GT Expression                    
-         | Expression GTEQ Expression                  
-         | Expression EQ Expression                    
-		 | Expression TOKEN_AND Expression
-		 | Expression TOKEN_OR Expression
-		 | Expression TOKEN_XOR Expression
-		 | TOKEN_NOT Expression
+Relation : Expression LT Expression { $$ = new BinaryRelation($1, $3, RelationOp.LT); }
+         | Expression LTEQ Expression { $$ = new BinaryRelation($1, $3, RelationOp.LTEQ); }
+         | Expression GT Expression   { $$ = new BinaryRelation($1, $3, RelationOp.GT); }
+         | Expression GTEQ Expression  { $$ = new BinaryRelation($1, $3, RelationOp.GTEQ); }
+         | Expression EQ Expression     { $$ = new BinaryRelation($1, $3, RelationOp.EQ); }
+		 | Expression TOKEN_AND Expression { $$ = new BinaryRelation($1, $3, RelationOp.AND); }
+		 | Expression TOKEN_OR Expression { $$ = new BinaryRelation($1, $3, RelationOp.OR); }
+		 | Expression TOKEN_XOR Expression { $$ = new BinaryRelation($1, $3, RelationOp.XOR); }
+		 | TOKEN_NOT Expression { $$ = new UnaryRelation($2, RelationOp.NOT); }
 ;
 
-Calc :  Expression PLUS Expression 
-		 | Expression MINUS Expression
-		 | Expression MULT Expression 
-		 | Expression DIV Expression 
+Calc :  Expression PLUS Expression { $$ = new CalcExpression($1, $3, CalcOp.PLUS); }
+		 | Expression MINUS Expression { $$ = new CalcExpression($1, $3, CalcOp.MINUS); }
+		 | Expression MULT Expression { $$ = new CalcExpression($1, $3, CalcOp.MULT); }
+		 | Expression DIV Expression { $$ = new CalcExpression($1, $3, CalcOp.DIV); }
 ;
 
-Value : STRING
-		 | INTEGER_LITERAL
-		 | REAL_LITERAL
-		 | KW_TRUE
-		 | KW_FALSE
+Value : STRING { $$ = new StringValue($1); }
+		 | INTEGER_LITERAL { $$ = new IntegerValue($1); }
+		 | REAL_LITERAL { $$ = new RealValue($1); }
+		 | BOOLEAN_LITERAL { $$ = new BooleanValue($1); }
 		 | ArrayValue
 		 | DictValue
 ;
 
-ArrayValue : LBRACK ArrayValues RBRACK ;
+ArrayValue : LBRACK ArrayValues RBRACK { $$ = new ArrayValue($2); } ;
 
-DictValue : LBRACE DictValues RBRACE ;
+DictValue : LBRACE DictValues RBRACE { $$ = new DictValue($2); } ;
 
-DictValues : %empty
-		 | Assignment COMMA DictValues
-;		 
-
-ArrayValues : %empty
-		 | Expression COMMA ArrayValues
-;
-		 
-FunctionDef : KW_FUNCT LPAREN Params RPAREN KW_IS Body KW_END ;
-
-FunctionCall : IDENTIFIER LPAREN Args RPAREN ;
-
-Params: %empty
-	     | IDENTIFIER COMMA Params
-		 } IDENTIFIER
+DictValues : %empty { $$ = new DictValues(); }
+		 | Assignment COMMA DictValues { $$ = new DictValues($3, $1); }
 ;
 
-Args: %empty
-		 | Expression COMMA Args
-		 | Expression
+ArrayValues : %empty { $$ = new ArrayValues(); }
+		 | Expression COMMA ArrayValues { $$ = new ArrayValues($3, $1); }
+;
+
+FunctionDef : KW_FUNCT LPAREN Params RPAREN KW_IS Prog KW_END { $$ = new FunctionDef($3, $6); } ;
+
+FunctionCall : IDENTIFIER_T LPAREN Args RPAREN { $$ = new FunctionCall($1, $3); } ;
+
+Params: %empty { $$ = new Params(); }
+	     | IDENTIFIER_T COMMA Params { $$ = new Params($3, $1); }
+;
+
+Args: %empty { $$ = new Args(); }
+		 | Expression COMMA Args { $$ = new Args($3, $1); }
 ;
 
 Statement : IfStatement
@@ -163,13 +172,13 @@ Statement : IfStatement
 		 | WhileStatement
 ;
 
-IfStatement : KW_IF LPAREN Expression RPAREN KW_THEN Body KW_END
-		 | KW_IF LPAREN Expression RPAREN KW_THEN Body KW_ELSE Body KW_END
+IfStatement : KW_IF LPAREN Expression RPAREN KW_THEN Prog KW_END { $$ = new IfStatement($3, $6); }
+		 | KW_IF LPAREN Expression RPAREN KW_THEN Prog KW_ELSE Prog KW_END { $$ = new IfStatement($3, $6, $8); }
 ;
 
-ForStatement : KW_FOR LPAREN IDENTIFIER KW_IN Expression RPAREN KW_LOOP Body KW_END ;
+ForStatement : KW_FOR LPAREN IDENTIFIER_T KW_IN Expression RPAREN KW_LOOP Prog KW_END { $$ = new ForStatement($3, $5, $8); } ;
 
-WhileStatement : KW_WHILE LPAREN Expression RPAREN KW_LOOP Body KW_END ;
+WhileStatement : KW_WHILE LPAREN Expression RPAREN KW_LOOP Prog KW_END { $$ = new WhileStatement($3, $6); } ;
 
 %%
 
@@ -190,7 +199,7 @@ class ParserLexer implements parser.Lexer {
 
   @Override
   public Object getLVal() {
-    return null;
+    return yylex.yytext();
   }
 
   @Override

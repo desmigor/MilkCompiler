@@ -60,7 +60,8 @@ UNKNOWN_TOKEN = .
   "return"                       { System.out.println("[token at line " + yyline + " = \"" + yytext() + "\" : KW_RETURN]"); return ParserLexer.KW_RETURN; }
   "print"                        { System.out.println("[token at line " + yyline + " = \"" + yytext() + "\" : KW_PRINT]"); return ParserLexer.KW_PRINT; }
   "funct"                        { System.out.println("[token at line " + yyline + " = \"" + yytext() + "\" : KW_FUNCT]"); return ParserLexer.KW_FUNCT; }
-  
+  "in"                        { System.out.println("[token at line " + yyline + " = \"" + yytext() + "\" : KW_IN]"); return ParserLexer.KW_IN; }
+
 
   
   /* boolean literals */
