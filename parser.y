@@ -150,10 +150,12 @@ FunctionCall : IDENTIFIER LPAREN Args RPAREN ;
 
 Params: %empty
 	     | IDENTIFIER COMMA Params
+		 } IDENTIFIER
 ;
 
 Args: %empty
 		 | Expression COMMA Args
+		 | Expression
 ;
 
 Statement : IfStatement
