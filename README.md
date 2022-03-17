@@ -10,6 +10,11 @@ Milk compiler is a toy compiler for Dynamic programming languages with a small s
 - Talgat Bektleuov 
 - Olexey Smolyakov
 
+### Tools
+1. jFlex for Lexical analyzer
+
+2. Bison and Java to parse and create AST
+
 ## How to run the code
 
 You need to have the latest JAVA JDK 17 and Bison installed to be able to run everything smoothly
