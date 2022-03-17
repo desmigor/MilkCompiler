@@ -54,6 +54,7 @@ public class WhileStatement implements IStatement {
             if (expr instanceof BooleanValue && ((BooleanValue) expr).getValue()) {
                 body.execute(context);
             } else {
+
                 break;
             }
         } while (true);
