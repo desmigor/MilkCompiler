@@ -21,7 +21,7 @@ You need to have the latest JAVA JDK 17 and Bison installed to be able to run ev
 
 **Step 1:** Clone the git repository
 
-**Step 2:** git checkout master
+**Step 2:** git checkout master.
 
 **Step 3:** Open terminal and run the make file using `make` command.
 
